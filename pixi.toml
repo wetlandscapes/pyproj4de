@@ -11,3 +11,4 @@ version = "0.1.0"
 [dependencies]
 python = "3.13.*"
 jupyterlab = ">=4.3.5,<5"
+polars = ">=1.22.0,<2"
