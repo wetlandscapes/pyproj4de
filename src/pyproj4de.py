@@ -2,16 +2,23 @@ import os
 import glob
 import polars as pl
 import xml.etree.ElementTree as ET
-from datetime import datetime
+# from datetime import datetime
 
 
 def extract_csv(file, **kwargs):
-    df = pl.read_csv(file, **kwargs)
+    # Schema method ensures consistency (all strings)
+    df = pl.read_csv(file, infer_schema = False, **kwargs)
     return df
 
 
 def extract_json(file, **kwargs):
     df = pl.read_ndjson(file, **kwargs)
+
+    # Convert all columns to string to be consistent
+    df = df.select([
+        pl.col(col).cast(pl.String) for col in df.columns
+    ])
+
     return df
 
 
@@ -39,25 +46,25 @@ def extract_xml(file, columns, kwargs=None):
 
 def extract(dir, columns, **kwargs):
 
+    # Initialize
     data = []
     
+    # Read in csv files
     for file in glob.glob(os.path.join(dir, "*.csv")):
         data_csv = extract_csv(file, columns = columns)
         data.append(data_csv)
 
+    # Read in json files
     for file in glob.glob(os.path.join(dir, "*.json")):
         data_json = extract_json(file)
         data.append(data_json)
 
-    # for file in glob.glob(os.path.join(dir, "*.xml")):
-    #     data_xml = extract_xml(file, columns)
-    #     data.append(data_xml)
+    # Read in xml files
+    for file in glob.glob(os.path.join(dir, "*.xml")):
+        data_xml = extract_xml(file, columns)
+        data.append(data_xml)
 
+    # Combine all the data -- all columns will be string
     df = pl.concat(data)
 
     return (df)
-
-
-extract_json("data/raw/minimal/source1.json")
-
-tmp = extract("data/raw/minimal", columns = ['name', 'height', "weight"])
