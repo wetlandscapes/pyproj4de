@@ -19,6 +19,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/bleach-6.2.0-pyh29332c3_4.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/bleach-with-css-6.2.0-h82add2a_4.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/brotli-python-1.1.0-py313h46c70d0_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/bs4-4.13.3-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-h4bc722e_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2025.1.31-hbcca054_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cached-property-1.5.2-hd8ed1ab_1.tar.bz2
@@ -317,6 +318,15 @@ packages:
   license_family: MIT
   size: 350424
   timestamp: 1725267803672
+- conda: https://conda.anaconda.org/conda-forge/noarch/bs4-4.13.3-hd8ed1ab_0.conda
+  sha256: 0a10c38845ece7c88535f02b134eb40525885bbca900c7e046155e9f00e66c24
+  md5: 85d360a825615bc5d66f89845b4435cc
+  depends:
+  - beautifulsoup4 >=4.13.3,<4.13.4.0a0
+  license: MIT
+  license_family: MIT
+  size: 6721
+  timestamp: 1738740461728
 - conda: https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-h4bc722e_7.conda
   sha256: 5ced96500d945fb286c9c838e54fa759aa04a7129c59800f0846b4335cee770d
   md5: 62ee74e96c5ebb0af99386de58cf9553
