@@ -1,19 +1,19 @@
 import requests
-import sqlite3
+# import sqlite3
+# import pandas as pd
 import polars as pl
 from bs4 import BeautifulSoup
 
+# Options
 url = 'https://web.archive.org/web/20230902185655/' + \
     'https://en.everybodywiki.com/100_Most_Highly-Ranked_Films'
-db_name = 'data/processed/Movies.db'
+db_name = 'sqlite:///data/processed/Movies.db'
 table_name = 'Top_50'
 csv_path = 'data/processed/top_50_films.csv'
-df = pl.DataFrame(schema = ["Average Rank", "Film", "Year"])
 
-
+# Read in data
 html_page = requests.get(url).text
 data = BeautifulSoup(html_page, 'html.parser')
-
 tables = data.find_all('tbody')
 table = tables[0]
 
@@ -57,14 +57,13 @@ df = (rankings
     .filter(pl.col('Average Rank') <= 50)
 )
 
+#Write to csv
 df.write_csv(csv_path)
 
-db_conn = f'sqlite:///data/processed/Movies.db'
-table_name = 'Top_50'
-
+#Write to database
 df.write_database(
     table_name = table_name,
-    connection = db_conn,
+    connection = db_name,
     if_table_exists = "replace"
 )
 
