@@ -1,5 +1,12 @@
+# This allows pyproj4de dependency to be run interactively or from terminal
+if __name__ == "__main__":
+    import sys
+    from pathlib import Path
+    sys.path.append(str(Path(__file__).parent.parent))
+
 import polars as pl
 from datetime import datetime
+
 from src import pyproj4de as de
 
 data_dir = "data/raw/minimal"
@@ -39,4 +46,4 @@ log_progress("Load phase started")
 de.write_data(data_file, data = converted_data)
 log_progress("Load phase finished") 
 
-log_progress("ETL job finished")
+log_progress("ETL job finished\n")
