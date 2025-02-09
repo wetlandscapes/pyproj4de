@@ -59,11 +59,12 @@ df = (rankings
 
 df.write_csv(csv_path)
 
-conn = sqlite3.connect(db_name)
+db_conn = f'sqlite:///data/processed/Movies.db'
+table_name = 'Top_50'
 
 df.write_database(
     table_name = table_name,
-    connection = conn,
+    connection = db_conn,
     if_table_exists = "replace"
 )
 
