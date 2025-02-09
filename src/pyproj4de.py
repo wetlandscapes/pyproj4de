@@ -1,8 +1,11 @@
 import os
 import glob
+import pint
 import polars as pl
 import xml.etree.ElementTree as ET
-# from datetime import datetime
+
+# Initialize pint registry
+ureg = pint.UnitRegistry()
 
 def extract_csv(file, columns = None, options = None):
     """Extract data from CSV file.
@@ -76,7 +79,7 @@ def extract_xml(file, columns = None, options = None):
     return pl.DataFrame(data, **df_options)
 
 
-def extract(dir_path, columns = None, options = None):
+def extract_data(dir_path, columns = None, options = None):
     """Extract data from multiple file types in a directory.
     
     Args:
@@ -139,3 +142,113 @@ def extract(dir_path, columns = None, options = None):
     
     # Return combined data or empty data frame if no data
     return pl.concat(data) if data else pl.DataFrame()
+
+def transform_type(data, schema = None):
+    """Transform DataFrame by converting types of schema-defined columns.
+    
+    Args:
+        df: polars.DataFrame to transform
+        schema: Optional dict defining columns and their data types
+                Keys are column names and values are polars data types
+                Example: {'price': pl.Float32, 'quantity': pl.Int32}
+                If None, returns DataFrame unchanged
+    
+    Returns:
+        polars.DataFrame with schema-defined columns converted and all other columns preserved
+        
+    Example:
+        schema = {
+            'price': pl.Float32,      # Convert to 32-bit float
+            'quantity': pl.Int32,     # Convert to 32-bit integer
+        }
+        # All columns are preserved, but 'price' and 'quantity' are converted
+        df_transformed = transform(df, schema)
+        
+        # Without schema, returns DataFrame unchanged
+        df_unchanged = transform(df)
+    """
+    
+    if schema is None:
+        return data
+
+    # Loop through schema-defined columns, changing type
+    expressions = [
+        pl.col(col).cast(
+            schema[col],
+            strict=False) if col in schema else pl.col(col)
+        for col in data.columns
+    ]
+
+    return data.select(expressions)
+
+def apply_conversion(column_name, from_unit, to_unit):
+    """Create a polars expression to convert a column from one unit to another.
+    
+    Args:
+        column_name: Name of the column to convert
+        from_unit: Source unit (e.g., 'gram', 'cm', 'celsius')
+        to_unit: Target unit (e.g., 'pound', 'inch', 'fahrenheit')
+    
+    Returns:
+        polars.Expr: Expression that can be used in select or with_columns
+        
+    Example:
+        # Single column conversion
+        df.select([
+            apply_conversion('weight', 'gram', 'pound'),
+            pl.col('*')
+        ])
+        
+        # Multiple conversions
+        df.with_columns([
+            apply_conversion('weight', 'gram', 'pound'),
+            apply_conversion('height', 'cm', 'inch')
+        ])
+    """
+    factor = ureg(from_unit).to(to_unit).magnitude
+    return pl.col(column_name) * factor
+
+def transform_unit(df, conversions = None):
+    """Convert units for specified columns in DataFrame.
+    
+    Args:
+        df: polars.DataFrame to transform
+        unit_map: Optional dict mapping column names to unit conversion tuples
+                 Each tuple should be (from_unit, to_unit)
+                 Example: {'weight': ('gram', 'pound')}
+    
+    Returns:
+        polars.DataFrame with unit conversions applied and other columns preserved
+
+    Example:
+        df = pl.DataFrame({'height': [64.0, 72.0], 'weight': [100.0, 200.0]})
+        schema = {
+            'height': ('inch', 'meter'),
+            'weight': ('pound', 'kilogram')
+        transform_unit(df, conversions = schema)
+    }
+    """
+    if conversions is None:
+        return df
+    
+    expressions = [
+        apply_conversion(col, *conversions[col]) if col in conversions else pl.col(col)
+        for col in df.columns
+    ]
+    
+    return df.select(expressions)
+
+def write_data(file, data):
+    data.write_csv(file)
+    """Write transformed data to a csv file.
+
+    Args:
+        file: To location of the file to be written, appended with ".csv"
+        data: The dataframe (polars.DataFrame) to be written to disk
+
+    Returns:
+        None
+
+    Example:
+        write_data("my_data.csv", polars_df)
+    """
