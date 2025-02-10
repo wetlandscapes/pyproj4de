@@ -33,3 +33,22 @@ df_row = pl.DataFrame(
     'CCODE': ['FR']})
 
 df.union_all(df_row)
+
+# 
+import ibis
+
+# Turn off (False) to make evaluations lazier
+ibis.options.interactive = True
+
+conn = ibis.connect("polars://")
+
+df_raw = conn.read_csv("data/raw/minimal/INSTRUCTOR.csv",
+    new_columns = ['ID', 'FNAME', 'LNAME', 'CITY', 'CCODE'])
+df_raw.count()
+
+df_raw.
+
+type(df_raw)
+
+
+conn.disconnect()
