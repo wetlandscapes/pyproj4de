@@ -1,21 +1,21 @@
 [project]
 authors = ["Jason Mercer <jasonjmercer@gmail.com>"]
 channels = ["conda-forge"]
-description = "Add a short description here"
+description = "Interactive environment for pyproj4de repo"
 name = "pyproj4de"
 platforms = ["linux-64"]
-version = "0.1.0"
+version = "0.2.0"
 
 [tasks]
 
 [dependencies]
-python = "3.13.*"
+python = "3.12.*"
 jupyterlab = ">=4.3.5,<5"
 polars = ">=1.22.0,<2"
 pint = ">=0.24.4,<0.25"
 bs4 = ">=4.13.3,<5"
 sqlalchemy = ">=2.0.38,<3"
 pandas = ">=2.2.3,<3"
-pyarrow = ">=8.0.0"
+pyarrow = ">=19.0.0,<20"
 ibis-sqlite = ">=9.5.0,<10"
 ibis-duckdb = ">=9.5.0,<10"
