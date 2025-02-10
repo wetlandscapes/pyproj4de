@@ -63,5 +63,5 @@ print(
     .count()
 )
 
-
+# Close the connection
 conn.disconnect()
