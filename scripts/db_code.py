@@ -1,30 +1,31 @@
 import ibis
-import ibis.selectors as s
-from ibis import _
 import polars as pl
 
-df = ibis.read_csv("data/raw/minimal/INSTRUCTOR.csv",
-    column_names = ['ID', 'FNAME', 'LNAME', 'CITY', 'CCODE'])
+tbl_nm = 'INSTRUCTOR'
 
-#Return only FNAME
-(df.to_polars()
-    .select(["FNAME"])
-)
+# Turn off (False) to make evaluations lazier
+ibis.options.interactive = True
 
-ibis.to_sql(
-    (df.select(["FNAME"]))
-)
+# Establish connection
+conn = ibis.sqlite.connect("data/processed/STAFF.db")
 
-#Return rows
-(df.to_polars()
-    .select(pl.len())
-)
+# Load data
+data_raw = pl.read_csv("data/raw/minimal/INSTRUCTOR.csv",
+    new_columns = ['ID', 'FNAME', 'LNAME', 'CITY', 'CCODE'])
 
-ibis.to_sql(
-    (df.count())
-)
+# Return only FNAME column
+data_raw.select("FNAME")
 
-#Append
+# Get info about object
+# help(data_raw)
+
+# Checkout the number of entries (rows)
+data_raw.select(pl.len())
+
+# Create table
+conn.create_table(tbl_nm, data_raw)
+
+# New row to insert into table
 df_row = pl.DataFrame(
     {'ID': [100],
     'FNAME': ['John'],
@@ -32,23 +33,35 @@ df_row = pl.DataFrame(
     'CITY': ['Paris'],
     'CCODE': ['FR']})
 
-df.union_all(df_row)
+# Check that the schema matches
+data_raw.vstack(df_row)
 
-# 
-import ibis
+# Add entry to database
+conn.insert(tbl_nm, df_row)
 
-# Turn off (False) to make evaluations lazier
-ibis.options.interactive = True
+# Check that the data looks right
+conn.table(tbl_nm).to_polars()
 
-conn = ibis.connect("polars://")
+# Show SQL
+print(
+    ibis.to_sql(
+        conn.table(tbl_nm)
+    )
+)
 
-df_raw = conn.read_csv("data/raw/minimal/INSTRUCTOR.csv",
-    new_columns = ['ID', 'FNAME', 'LNAME', 'CITY', 'CCODE'])
-df_raw.count()
+# Just FNAME column
+(
+    conn
+    .table(tbl_nm)
+    .select('FNAME')
+)
 
-df_raw.
-
-type(df_raw)
+# Number of rows
+(
+    conn
+    .table(tbl_nm)
+    .count()
+)
 
 
 conn.disconnect()
