@@ -26,3 +26,5 @@ default = { solve-group = "base" }
 
 [feature.dev.dependencies]
 icecream = "*"
+ruff = ">=0.9.6,<0.10"
+pytest = ">=8.3.4,<9"
