@@ -19,3 +19,10 @@ pandas = ">=2.2.3,<3"
 pyarrow = ">=19.0.0,<20"
 ibis-sqlite = ">=9.5.0,<10"
 ibis-duckdb = ">=9.5.0,<10"
+
+[environments]
+dev = { features = ["dev"], solve-group = "base" }
+default = { solve-group = "base" }
+
+[feature.dev.dependencies]
+icecream = "*"
