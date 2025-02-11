@@ -15,7 +15,7 @@ data_raw = pl.read_csv(
     ]
 )
 
-# Tried inserting just a dict, but got error; easier to use dataframe
+# Tried inserting just a dict, but got index error; easier to use dataframe
 new_row = pl.DataFrame({
     'DEPT_ID': 9,
     'DEP_NAME': 'Quality Assurance',
