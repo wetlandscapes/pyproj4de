@@ -4,7 +4,7 @@ if __name__ == "__main__":
     from pathlib import Path
     sys.path.append(str(Path(__file__).parent.parent))
 
-import polars as pl
+# import polars as pl
 from datetime import datetime
 
 from src import pyproj4de as de
